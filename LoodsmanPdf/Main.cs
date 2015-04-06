@@ -53,7 +53,7 @@ namespace LoodsmanPdf
 
             switch(APlugin.stType)
             {
-                case "Сборочная единица":
+                case "Сборочная единица": //Возможна не только Сборочная единица
                     {
                         logger.Info("Выбран тип \"Сборочная единица\"");
 
