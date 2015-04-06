@@ -1,0 +1,7 @@
+LIBRARY	CreateEmbodiments.Pgi
+
+EXPORTS
+InitUserDLLCom			@1
+PgiCheckMenuItemCom		@2
+GetPluginInfo			@3
+Function1    			@4

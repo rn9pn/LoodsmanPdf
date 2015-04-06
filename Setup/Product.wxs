@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define ProductName="Плагин для Лоцман PLM: Создать вторичное представление" ?>
+  <?define ProductVersion="1.0.1.0" ?>
+  <?define Manufacturer="Фриланс"?>
+  <?define ProductId = "F6DFCD45-C7B2-4E68-8706-A91F82C2781F" ?>
+  <?define ProductUpgradeCode = "CFD08E5E-FE79-448A-BCEF-60BF169BE423" ?>
+
+  <?if $(var.Platform) = x64 ?>
+  <?define IsWin64 = "yes" ?>
+  <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+  <?define DotNetFolder = "[WindowsFolder]Microsoft.NET\Framework64"?>
+  <?else ?>
+  <?define IsWin64 = "no" ?>
+  <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+  <?define DotNetFolder = "[WindowsFolder]Microsoft.NET\Framework"?>
+  <?endif ?>
+
+  <Product Id="$(var.ProductId)" Name="$(var.ProductName)" Language="1049" Version="$(var.ProductVersion)" Manufacturer="$(var.Manufacturer)" UpgradeCode="$(var.ProductUpgradeCode)" Codepage="1251">
+    <Package InstallerVersion="405" Compressed="yes" InstallScope="perMachine" SummaryCodepage="1251"/>
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+    <!--Обновление-->
+    <Property Id="PREVIOUSVERSIONINSTALLED" Secure="yes"/>
+    <Upgrade Id="$(var.ProductUpgradeCode)">
+      <UpgradeVersion Minimum="0.0.0.0" Property="PREVIOUSVERSIONINSTALLED" IncludeMinimum="yes" IncludeMaximum="no" Maximum="$(var.ProductVersion)"/>
+    </Upgrade>
+
+    <!--Проверка на наличие .NET Framework (NETFRAMEWORK35, NETFRAMEWORK40FULL, NETFRAMEWORK45)-->
+    <PropertyRef Id="NETFRAMEWORK40FULL"/>
+    <Condition Message="Please install .NET Framework 4.0, you can download it from http://www.microsoft.com/ ">
+      <![CDATA[Installed OR NETFRAMEWORK40FULL]]>
+    </Condition>
+
+    <!--Установка Microsoft_VC120_CRT_x86-->
+    <DirectoryRef Id="TARGETDIR">
+      <Merge Id="MSVCRedist" DiskId="1" Language="0" SourceFile="Microsoft_VC120_CRT_x86.msm"></Merge>
+    </DirectoryRef>
+    <Feature Id="VCRedist" AllowAdvertise="no" Display="hidden" Level="1" Title="Microsoft_VC120_CRT_x86">
+      <MergeRef Id="MSVCRedist"/>
+    </Feature>
+
+    <!--Иконка-->
+    <Icon Id="icon.ico" SourceFile="icon.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+
+    <!--Выбор групп компонентов в инсталяторе-->
+    <Feature Id="ProductFeature" Title="Setup" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="NLog" />
+    </Feature>
+
+    <!--Формы UI-->
+    <UI Id='InstallDir'>
+      <UIRef Id="WixUI_InstallDir" />
+      <UIRef Id="WixUI_ErrorProgressText"/>
+      <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER"/>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="2">1</Publish>
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2">1</Publish>
+    </UI>
+
+    <!--События во время установки-->
+    <InstallExecuteSequence>
+      <Custom Action="comReg" After="InstallFiles">NOT REMOVE</Custom>
+      <Custom Action="comUnreg" Before="RemoveFiles">Installed</Custom>
+    </InstallExecuteSequence>
+  </Product>
+
+  <!--Дерево пути установки-->
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="$(var.PlatformProgramFilesFolder)">
+        <Directory Id="ASCON" Name="ASCON">
+          <Directory Id="Loodsman" Name="Loodsman">
+            <Directory Id="Client" Name="Client">
+              <Directory Id="INSTALLFOLDER" Name="LoodsmanPdf">
+                <Directory Id ="GAC" Name ="GAC"/>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <!--Файлы и компоненты-->
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="Product1" Guid="A830FCA6-A6D0-445C-994E-4C7AAC3D4ACF" Win64="$(var.IsWin64)">
+        <File Id="LoodsmanPdf.dll" Source="$(var.LoodsmanPdf.TargetDir)LoodsmanPdf.dll"  />
+      </Component>
+      <Component Id="Log1" Guid="55CAED2B-8ED3-4C52-94EC-1926109963C3" Win64="$(var.IsWin64)">
+        <File Id="NLog.config" Source="$(var.LoodsmanPdf.TargetDir)NLog.config"  />
+      </Component>
+      <Component Id="Wrapper1" Guid="EA488BDC-59D8-47F8-B7BA-3261693A27BF" Win64="$(var.IsWin64)">
+        <File Id="LoodsmanPdf.pgi" Source="$(var.Wrapper.TargetDir)LoodsmanPdf.pgi"  />
+        <RegistryKey Root="HKCU" Key="Software\Ascon\Loodsman\Client\PluginManager\*\LoodsmanPdf.pgi">
+          <RegistryValue Type="string" Value="[INSTALLFOLDER]LoodsmanPdf.pgi" KeyPath="yes" />
+          <RegistryValue Type="integer" Name="Active" Value="1" />
+          <RegistryValue Type="string" Name="ActualTime" Value="[Date] [Time]" />
+          <RegistryValue Type="integer" Name="System" Value="0" />
+        </RegistryKey>
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <!--Файлы и компоненты-->
+  <Fragment>
+    <ComponentGroup Id="NLog" Directory="GAC">
+      <Component Id="NLog1" Guid="75E3B004-4B00-485F-A383-B4C1D8EC7E1E" Win64="$(var.IsWin64)">
+        <File Id="NLog.dll" Source="$(var.LoodsmanPdf.TargetDir)NLog.dll"  KeyPath="yes" Assembly=".net"/>
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <!--Регистрация Set_Notifications.dll-->
+  <Fragment>
+    <CustomAction
+    Id="comReg"
+    Execute="deferred"
+    Impersonate="no"
+    Directory="INSTALLFOLDER"
+    ExeCommand='"$(var.DotNetFolder)\v4.0.30319\regasm.exe" "[INSTALLFOLDER]LoodsmanPdf.dll" /codebase'
+    Return="check" />
+  </Fragment>
+
+  <!--Разрегистрация Set_Notifications.dll-->
+  <Fragment>
+    <CustomAction
+    Id="comUnreg"
+    Execute="deferred"
+    Impersonate="no"
+    Directory="INSTALLFOLDER"
+    ExeCommand='"$(var.DotNetFolder)\v4.0.30319\regasm.exe" /u "[INSTALLFOLDER]LoodsmanPdf.dll"'
+    Return="check" />
+  </Fragment>
+  
+</Wix>
