@@ -76,7 +76,9 @@
           <Directory Id="Loodsman" Name="Loodsman">
             <Directory Id="Client" Name="Client">
               <Directory Id="INSTALLFOLDER" Name="LoodsmanPdf">
-                <Directory Id ="GAC" Name ="GAC"/>
+                <Directory Id="SQL" Name="SQL">
+                  <Directory Id ="GAC" Name ="GAC"/>
+                </Directory>
               </Directory>
             </Directory>
           </Directory>
@@ -102,10 +104,19 @@
           <RegistryValue Type="string" Name="ActualTime" Value="[Date] [Time]" />
           <RegistryValue Type="integer" Name="System" Value="0" />
         </RegistryKey>
-      </Component>
+      </Component>    
     </ComponentGroup>
   </Fragment>
 
+  <!--Файлы и компоненты-->
+  <Fragment>
+    <ComponentGroup Id="SQL" Directory="SQL">
+      <Component Id="Sql1" Guid="6757207A-4710-4C92-AF30-A30FCC6C3B66" Win64="$(var.IsWin64)">
+        <File Id="CreateSecondaryRepresentation.sql" Source="$(var.LoodsmanPdf.TargetDir)\SQL\CreateSecondaryRepresentation.sql" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+  
   <!--Файлы и компоненты-->
   <Fragment>
     <ComponentGroup Id="NLog" Directory="GAC">

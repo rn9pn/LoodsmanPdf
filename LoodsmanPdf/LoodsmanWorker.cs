@@ -96,5 +96,15 @@ namespace LoodsmanPdf
             }
             return string.Empty;
         }
+
+        /// <summary>
+        /// Загрузить вторичное представление
+        /// </summary>
+        /// <param name="_id">Id объекта</param>
+        /// <param name="_pdfFileString">Строка из массива байт</param>
+        internal void SetPdf(int _id, string _pdfFileString)
+        {
+            API.RunMethod("GetReport", new object[] { "CreateSecondaryRepresentation", _id, "pdffile=" + _pdfFileString, returncode, errmes });
+        }
     }
 }

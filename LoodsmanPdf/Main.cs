@@ -50,7 +50,7 @@ namespace LoodsmanPdf
 
             LoodsmanWorker loodsman = new LoodsmanWorker(_APlugin);
 
-            KompasWorker kompas = new KompasWorker(true);
+            KompasWorker kompas = new KompasWorker(false);
 
             List<int> allDocs = loodsman.GetAllDocs();            
 
@@ -58,7 +58,13 @@ namespace LoodsmanPdf
             {
                 string filePath = loodsman.GetFile(id);
 
-                //kompas.ConvertFile(filePath);
+                string pdfFilePath = kompas.ConvertFile(filePath);
+
+                byte[] pdfFileByteArray = System.IO.File.ReadAllBytes(pdfFilePath);
+
+                string pdfFileString = System.Text.Encoding.UTF8.GetString(pdfFileByteArray);
+
+                loodsman.SetPdf(id, pdfFileString);
             }
 
             logger.Info("Выход из программы");

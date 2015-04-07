@@ -42,13 +42,21 @@ namespace LoodsmanPdf
             }
         }        
 
-        public void ConvertFile(string _path)
-        {
-            //IKompasDocument doc = (IKompasDocument)API7.OpenDocument(@_path, 0);            
-            //IConverter pdfConverter = (IConverter)API7.get_Converter(@Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\Pdf2d(x64).dll");
-            ////IPdf2dParam pdfParam = (IPdf2dParam)pdfConverter.ConverterParameters(0);
-            ////pdfParam.ColorType = 1;                
-            //pdfConverter.Convert(doc.PathName, _path + ".pdf", 1, false);  
+        /// <summary>
+        /// Сконвертировать файл в pdf-формат
+        /// </summary>
+        /// <param name="_path">Полный путь до файла</param>
+        public string ConvertFile(string _path)
+        {                        
+            IConverter pdfConverter = (IConverter)API7.get_Converter(@Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\Pdf2d(x64).dll");
+            //IPdf2dParam pdfParam = (IPdf2dParam)pdfConverter.ConverterParameters(0);
+            //pdfParam.ColorType = 1;                
+            if(pdfConverter.Convert(_path, _path + ".pdf", 1, false) == 1)
+            {
+                return _path + ".pdf";
+            }
+
+            return string.Empty;
         }
     }
 }
