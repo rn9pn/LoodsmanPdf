@@ -1,4 +1,4 @@
-LIBRARY	CreateEmbodiments.Pgi
+LIBRARY	LoodsmanPdf.Pgi
 
 EXPORTS
 InitUserDLLCom			@1

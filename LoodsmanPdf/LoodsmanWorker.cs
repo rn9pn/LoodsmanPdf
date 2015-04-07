@@ -4,26 +4,42 @@ using System.Linq;
 using System.Text;
 using Loodsman;
 using DataProvider;
+using System.IO;
 
 namespace LoodsmanPdf
 {
-    internal static class Assistant
+    class LoodsmanWorker
     {
-        private static object returncode = 0;
-        private static object errmes = 0;
+        private IPluginCall API; 
+        private object returncode = 0;
+        private object errmes = 0;
+
+        public LoodsmanWorker(IPluginCall _loodsman)
+        {
+            API = _loodsman;
+
+            if (API == null)
+            {
+                throw new Exception("Не удалось подключиться к Kompas3D");
+            }
+        }
 
         /// <summary>
-        /// Возвращает id-шники всех объектов типа "Документ"
-        /// </summary>
-        /// <param name="_idVersion">Контекст поиска, задается через запятую</param>        
-        internal static List<int> GetAllDocs(string _idVersion)
+        /// Возвращает id-шники всех объектов типа "Документ" входящие в селектируемый объект
+        /// </summary>             
+        internal List<int> GetAllDocs()
         {
             List<int> allDocs = new List<int>();
 
             DataSet docs = new DataSet();
-                        
-            docs.DATA = Main.APlugin.RunMethod("FindObjectsInContext2", new object[] { 
-                _idVersion,
+            
+            if(API.stType == "Документ")
+            {
+                allDocs.Add(API.IdVersion);
+            }
+            
+            docs.DATA = API.RunMethod("FindObjectsInContext", new object[] { 
+                Convert.ToString(API.IdVersion),
                 "<FIND><LinksStep id=\"1\" stepname=\"Связи1\" direction=\"down\" recursive=\"true\"><LinkList><LinkType name=\"Журнал изменений\"/><LinkType name=\"Документы\"/>"+
                 "<LinkType name=\"На основании\"/><LinkType name=\"Разработан по\"/><LinkType name=\"Заявка на\"/><LinkType name=\"Использует\"/><LinkType name=\"Элемент маршрута\"/>"+
                 "<LinkType name=\"Касается\"/><LinkType name=\"Состоит из ...\"/><LinkType name=\"Содержит\"/><LinkType name=\"Для изделий\"/><LinkType name=\"Применяется для ...\"/>"+
@@ -43,15 +59,42 @@ namespace LoodsmanPdf
                 docs.First();
                 while (!docs.Eof)
                 {
-                    if (docs.get_FieldValue("_TYPE") == "Сборочная единица")
-                    {
-                        allDocs.Add(docs.get_FieldValue("_ID_VERSION"));
-                    }
+                    allDocs.Add(docs.get_FieldValue("_ID_VERSION"));
+
                     docs.Next();
                 }
             }
 
             return allDocs;
+        }
+
+        /// <summary>
+        /// Выгрузить на диск файл с расширением ".kdw"
+        /// </summary>
+        /// <param name="_id">Id документа</param>
+        /// <returns>Имя файла с путем</returns>
+        internal string GetFile(int _id)
+        {
+            string fName;
+            string fLocalName;
+
+            DataSet fileInfo = new DataSet();
+            fileInfo.DATA = API.RunMethod("GetInfoAboutVersion", new object[] { "", "", "", _id, 7});
+            if(fileInfo.RecordCount > 0)
+            {
+                fileInfo.First();
+                while (!fileInfo.Eof)
+                {
+                    fName = fileInfo.get_FieldValue("_NAME");
+                    fLocalName = fileInfo.get_FieldValue("_LOCALNAME");
+                    if(Path.GetExtension(fName) == ".kdw")
+                    {
+                        return API.RunMethod("GetFileById", new object[] { _id, fName, fLocalName, returncode, errmes });
+                    }
+                    fileInfo.Next();
+                }
+            }
+            return string.Empty;
         }
     }
 }

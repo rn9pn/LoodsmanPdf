@@ -24,8 +24,7 @@ namespace LoodsmanPdf
     [ProgId("Loodsman.LoodsmanPdf")]
     [ComVisible(true)]
     public class Main : ILoodsmanPdf
-    {
-        public static IPluginCall APlugin;
+    {              
         public static Logger logger;        
         private object returncode = 0;
         private object errmes = 0;
@@ -49,31 +48,17 @@ namespace LoodsmanPdf
         {
             logger.Info("Создать вторичное представление");
 
-            APlugin = _APlugin;
+            LoodsmanWorker loodsman = new LoodsmanWorker(_APlugin);
 
-            switch(APlugin.stType)
+            KompasWorker kompas = new KompasWorker(true);
+
+            List<int> allDocs = loodsman.GetAllDocs();            
+
+            foreach (int id in allDocs)
             {
-                case "Сборочная единица": //Возможна не только Сборочная единица
-                    {
-                        logger.Info("Выбран тип \"Сборочная единица\"");
+                string filePath = loodsman.GetFile(id);
 
-                        List<int> allDocs = Assistant.GetAllDocs(Convert.ToString(APlugin.IdVersion));
-                    }
-                    break;
-
-                case "Документ":
-                    {
-                        logger.Info("Выбран тип \"Документ\"");
-                    }
-                    break;
-
-                default:
-                    {
-                        logger.Info("Выбран тип \"" + APlugin.stType + "\"");
-
-                        MessageBox.Show("Выбирите тип \"Сборочная единица\" или \"Документ\"");
-                    }
-                    break;
+                //kompas.ConvertFile(filePath);
             }
 
             logger.Info("Выход из программы");
