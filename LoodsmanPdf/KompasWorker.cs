@@ -52,11 +52,19 @@ namespace LoodsmanPdf
             //IPdf2dParam pdfParam = (IPdf2dParam)pdfConverter.ConverterParameters(0);
             //pdfParam.ColorType = 1;                
             if(pdfConverter.Convert(_path, _path + ".pdf", 1, false) == 1)
-            {
+            {                
                 return _path + ".pdf";
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Выйти из Компас3D
+        /// </summary>
+        public void Quit()
+        {
+            API5.Quit();
         }
     }
 }

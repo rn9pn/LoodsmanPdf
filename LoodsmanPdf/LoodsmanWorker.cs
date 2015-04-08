@@ -5,14 +5,17 @@ using System.Text;
 using Loodsman;
 using DataProvider;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace LoodsmanPdf
 {
     class LoodsmanWorker
     {
+        [DllImport("user32.dll")]
+        static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, Int32 wParam, Int32 lParam);        
         private IPluginCall API; 
         private object returncode = 0;
-        private object errmes = 0;
+        private object errmes = 0;        
 
         public LoodsmanWorker(IPluginCall _loodsman)
         {
@@ -27,7 +30,7 @@ namespace LoodsmanPdf
         /// <summary>
         /// Возвращает id-шники всех объектов типа "Документ" входящие в селектируемый объект
         /// </summary>             
-        internal List<int> GetAllDocs()
+        public List<int> GetAllDocs()
         {
             List<int> allDocs = new List<int>();
 
@@ -73,7 +76,7 @@ namespace LoodsmanPdf
         /// </summary>
         /// <param name="_id">Id документа</param>
         /// <returns>Имя файла с путем</returns>
-        internal string GetFile(int _id)
+        public string GetFile(int _id)
         {
             string fName;
             string fLocalName;
@@ -102,9 +105,18 @@ namespace LoodsmanPdf
         /// </summary>
         /// <param name="_id">Id объекта</param>
         /// <param name="_pdfFileString">Строка из массива байт</param>
-        internal void SetPdf(int _id, string _pdfFileString)
+        public void SetPdf(int _id, string _crcSumm, string _pdfFileString)
         {
-            API.RunMethod("GetReport", new object[] { "CreateSecondaryRepresentation", _id, "pdffile=" + _pdfFileString, returncode, errmes });
+            API.RunMethod("GetReport", new object[] { "CreateSecondaryRepresentation", _id, "crc=" + _crcSumm + ";" + "pdffile=" + _pdfFileString, returncode, errmes });            
+        }
+
+        /// <summary>
+        /// Обновить в лоцмане выделенный объект
+        /// </summary>
+        public void RefreshSelectedObject()
+        {
+            IntPtr ic = new IntPtr(API.ClientHandle);
+            SendMessage(ic, Convert.ToUInt32(0x0400) + 1, 0, 0); 
         }
     }
 }

@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CRC32.cs" />
     <Compile Include="LoodsmanWorker.cs" />
     <Compile Include="KompasWorker.cs" />
     <Compile Include="Main.cs" />

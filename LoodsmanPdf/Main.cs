@@ -43,7 +43,7 @@ namespace LoodsmanPdf
                 return;
             }
         }
-
+       
         public void Command1(IPluginCall _APlugin)
         {
             logger.Info("Создать вторичное представление");
@@ -56,18 +56,44 @@ namespace LoodsmanPdf
 
             foreach (int id in allDocs)
             {
-                string filePath = loodsman.GetFile(id);
+                try
+                {                    
+                    string filePath = loodsman.GetFile(id);
+                    
+                    string pdfFilePath = kompas.ConvertFile(filePath);
+                    
+                    byte[] binaryArray = File.ReadAllBytes(pdfFilePath);
+                    
+                    string pdfFileString = BinaryToString(binaryArray);
+                                        
+                    CRC32.BuildTable();
 
-                string pdfFilePath = kompas.ConvertFile(filePath);
-
-                byte[] pdfFileByteArray = System.IO.File.ReadAllBytes(pdfFilePath);
-
-                string pdfFileString = System.Text.Encoding.UTF8.GetString(pdfFileByteArray);
-
-                loodsman.SetPdf(id, pdfFileString);
+                    string crcSumm = ((uint)CRC32.Crc(binaryArray)).ToString(); 
+                    
+                    loodsman.SetPdf(id, crcSumm, pdfFileString);
+                    
+                    loodsman.RefreshSelectedObject();
+                }
+                catch(Exception ex)
+                {
+                    logger.Error("Ошибка при формировании вторичного представления для объекта с id = " + Convert.ToString(id) + " , сообщение об ошибке: " + ex.Message);
+                }
             }
+
+            kompas.Quit();
 
             logger.Info("Выход из программы");
         }
-    }
+
+        /// <summary>
+        /// Конвертирование файла в строку, состоящую из массива байт
+        /// </summary>
+        /// <param name="pdfFilePath">Путь до файла</param>        
+        public static string BinaryToString(byte[] _binaryArray)
+        {
+            string hex = BitConverter.ToString(_binaryArray);
+
+            return "0x" + hex.Replace("-", "");            
+        }        
+    }    
 }
