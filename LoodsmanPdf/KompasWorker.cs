@@ -48,15 +48,22 @@ namespace LoodsmanPdf
         /// <param name="_path">Полный путь до файла</param>
         public string ConvertFile(string _path)
         {                        
+            // Открыли файл документа
+            ksDocumentTxt doc = (ksDocumentTxt)API5.DocumentTxt();
+            doc.ksOpenDocument(_path, 0);
+
+            // Сконвертировали в pdf
             IConverter pdfConverter = (IConverter)API7.get_Converter(@Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\Pdf2d(x64).dll");
-            //IPdf2dParam pdfParam = (IPdf2dParam)pdfConverter.ConverterParameters(0);
-            //pdfParam.ColorType = 1;                
-            if(pdfConverter.Convert(_path, _path + ".pdf", 1, false) == 1)
-            {                
+            if (pdfConverter.Convert(_path, _path + ".pdf", 1, false) == 1)
+            {
+                doc.ksCloseDocument();
+
                 return _path + ".pdf";
             }
 
-            return string.Empty;
+            doc.ksCloseDocument();
+
+            throw new Exception("Не удалось сконвертировать файл \"" + _path + "\" в PDF формат");            
         }
 
         /// <summary>

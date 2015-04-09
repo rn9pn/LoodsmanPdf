@@ -57,10 +57,16 @@ namespace LoodsmanPdf
             foreach (int id in allDocs)
             {
                 try
-                {                    
+                {
+                    logger.Info("Отработка плагина для объекта с id = " + Convert.ToString(id));
+
                     string filePath = loodsman.GetFile(id);
+
+                    logger.Info("Путь до исходного файла: " + filePath);
                     
                     string pdfFilePath = kompas.ConvertFile(filePath);
+
+                    logger.Info("Путь до сконвертированного файла: " + pdfFilePath);
                     
                     byte[] binaryArray = File.ReadAllBytes(pdfFilePath);
                     
@@ -71,7 +77,9 @@ namespace LoodsmanPdf
                     string crcSumm = ((uint)CRC32.Crc(binaryArray)).ToString(); 
                     
                     loodsman.SetPdf(id, crcSumm, pdfFileString);
-                    
+
+                    logger.Info("Вторичное представление для объекта с id = " + Convert.ToString(id) + " успешно загружено в Лоцман");
+
                     loodsman.RefreshSelectedObject();
                 }
                 catch(Exception ex)

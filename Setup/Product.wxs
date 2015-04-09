@@ -49,7 +49,8 @@
     <!--Выбор групп компонентов в инсталяторе-->
     <Feature Id="ProductFeature" Title="Setup" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
-      <ComponentGroupRef Id="NLog" />
+      <ComponentGroupRef Id="SqlComponents" />
+      <ComponentGroupRef Id="NLog" />      
     </Feature>
 
     <!--Формы UI-->
@@ -76,7 +77,7 @@
           <Directory Id="Loodsman" Name="Loodsman">
             <Directory Id="Client" Name="Client">
               <Directory Id="INSTALLFOLDER" Name="LoodsmanPdf">
-                <Directory Id="SQL" Name="SQL">
+                <Directory Id="SQLINSTALLFOLDER" Name="SQL">
                   <Directory Id ="GAC" Name ="GAC"/>
                 </Directory>
               </Directory>
@@ -96,23 +97,23 @@
       <Component Id="Log1" Guid="55CAED2B-8ED3-4C52-94EC-1926109963C3" Win64="$(var.IsWin64)">
         <File Id="NLog.config" Source="$(var.LoodsmanPdf.TargetDir)NLog.config"  />
       </Component>
+      <Component Id="Pdf2dx64" Guid="84074FB5-4F23-4B32-A424-63B2CD82A2CE" Win64="$(var.IsWin64)">
+        <File Id="Pdf2dx64.dll" Source="$(var.LoodsmanPdf.TargetDir)Pdf2d(x64).dll"  />
+      </Component>
+      <Component Id="Pdf2dx86" Guid="6E8F3BA2-046A-4D1C-82C5-F67557E15822" Win64="$(var.IsWin64)">
+        <File Id="Pdf2dx86.dll" Source="$(var.LoodsmanPdf.TargetDir)Pdf2d(x86).dll"  />
+      </Component>
       <Component Id="Wrapper1" Guid="EA488BDC-59D8-47F8-B7BA-3261693A27BF" Win64="$(var.IsWin64)">
-        <File Id="LoodsmanPdf.pgi" Source="$(var.Wrapper.TargetDir)LoodsmanPdf.pgi"  />
-        <RegistryKey Root="HKCU" Key="Software\Ascon\Loodsman\Client\PluginManager\*\LoodsmanPdf.pgi">
-          <RegistryValue Type="string" Value="[INSTALLFOLDER]LoodsmanPdf.pgi" KeyPath="yes" />
-          <RegistryValue Type="integer" Name="Active" Value="1" />
-          <RegistryValue Type="string" Name="ActualTime" Value="[Date] [Time]" />
-          <RegistryValue Type="integer" Name="System" Value="0" />
-        </RegistryKey>
+        <File Id="LoodsmanPdf.pgi" Source="$(var.Wrapper.TargetDir)LoodsmanPdf.pgi"  />       
       </Component>    
     </ComponentGroup>
   </Fragment>
 
   <!--Файлы и компоненты-->
   <Fragment>
-    <ComponentGroup Id="SQL" Directory="SQL">
+    <ComponentGroup Id="SqlComponents" Directory="SQLINSTALLFOLDER">
       <Component Id="Sql1" Guid="6757207A-4710-4C92-AF30-A30FCC6C3B66" Win64="$(var.IsWin64)">
-        <File Id="CreateSecondaryRepresentation.sql" Source="$(var.LoodsmanPdf.TargetDir)\SQL\CreateSecondaryRepresentation.sql" />
+        <File Id="CreateSecondaryRepresentation.sql" Source="$(var.LoodsmanPdf.TargetDir)SQL\CreateSecondaryRepresentation.sql" />
       </Component>
     </ComponentGroup>
   </Fragment>
