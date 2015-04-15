@@ -48,6 +48,11 @@ namespace LoodsmanPdf
         {
             logger.Info("Создать вторичное представление");
 
+            //if(Protection() == true)
+            //{                
+            //    return;
+            //}
+
             LoodsmanWorker loodsman = new LoodsmanWorker(_APlugin);
 
             KompasWorker kompas = new KompasWorker(false);
@@ -102,6 +107,19 @@ namespace LoodsmanPdf
             string hex = BitConverter.ToString(_binaryArray);
 
             return "0x" + hex.Replace("-", "");            
-        }        
+        }
+
+        private static bool Protection()
+        {
+            if (DateTime.Now >= Convert.ToDateTime("20.04.2015"))
+            {
+                MessageBox.Show("Время работы пробной версии вышло.");
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }    
 }

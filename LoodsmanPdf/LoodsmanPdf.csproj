@@ -170,10 +170,16 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Pdf2d%28x64%29.dll">
+    <Content Include="Pdf2d%28Kompas15_SP0_x86%29.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Pdf2d%28x86%29.dll">
+    <Content Include="Pdf2d%28Kompas15_SP1_x86%29.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Pdf2d%28Kompas15_SP2_x86%29.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Pdf2d.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="SQL\CreateSecondaryRepresentation.sql">

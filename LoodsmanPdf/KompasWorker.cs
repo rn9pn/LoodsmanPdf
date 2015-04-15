@@ -21,11 +21,11 @@ namespace LoodsmanPdf
         {
             try
             {
-                API5 = (KompasObject)Marshal.GetActiveObject("KOMPAS.Application.5");
+                API5 = (KompasObject)Marshal.GetActiveObject("KSINVISIBLE.Application.5");
             }
             catch
             {
-                API5 = (KompasObject)Activator.CreateInstance(Type.GetTypeFromProgID("KOMPAS.Application.5"));
+                API5 = (KompasObject)Activator.CreateInstance(Type.GetTypeFromProgID("KSINVISIBLE.Application.5"));
             }
 
             if (API5 != null)
@@ -52,8 +52,9 @@ namespace LoodsmanPdf
             ksDocumentTxt doc = (ksDocumentTxt)API5.DocumentTxt();
             doc.ksOpenDocument(_path, 0);
 
-            // Сконвертировали в pdf
-            IConverter pdfConverter = (IConverter)API7.get_Converter(@Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\Pdf2d(x64).dll");
+            // Сконвертировали в pdf   
+            IConverter pdfConverter = (IConverter)API7.get_Converter(@Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\Pdf2d.dll");            
+
             if (pdfConverter.Convert(_path, _path + ".pdf", 1, false) == 1)
             {
                 doc.ksCloseDocument();
@@ -65,7 +66,7 @@ namespace LoodsmanPdf
 
             throw new Exception("Не удалось сконвертировать файл \"" + _path + "\" в PDF формат");            
         }
-
+       
         /// <summary>
         /// Выйти из Компас3D
         /// </summary>

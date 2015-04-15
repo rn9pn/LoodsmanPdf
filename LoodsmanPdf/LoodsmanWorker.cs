@@ -39,8 +39,8 @@ namespace LoodsmanPdf
             if(API.stType == "Документ")
             {
                 allDocs.Add(API.IdVersion);
-            }
-            
+            }                        
+
             docs.DATA = API.RunMethod("FindObjectsInContext", new object[] { 
                 Convert.ToString(API.IdVersion),
                 "<FIND><LinksStep id=\"1\" stepname=\"Связи1\" direction=\"down\" recursive=\"true\"><LinkList><LinkType name=\"Журнал изменений\"/><LinkType name=\"Документы\"/>"+
